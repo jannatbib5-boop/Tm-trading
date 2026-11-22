@@ -79,6 +79,16 @@ function originHtml(n){
 function toast(m){ var t=document.getElementById("toast"); t.textContent=m; t.style.display="block"; clearTimeout(toastT); toastT=setTimeout(function(){t.style.display="none"},3000); }
 var ADMIN_PIN = "5971"; // code secret pour modifier les prix
 
+try{ var ov = JSON.parse(localStorage.getItem("zentek_prices")||"{}"); PRODUCTS.forEach(function(p){ if(typeof ov[p.name]==="number") p.price = ov[p.name]; }); }catch(e){}
+try{ var qp = new URLSearchParams(location.search).get("p");
+  if(qp){ var arr = qp.split(",").map(Number);
+    if(arr.length===PRODUCTS.length && arr.every(function(n){return isFinite(n)&&n>=0})){
+      PRODUCTS.forEach(function(p,i){ p.price = arr[i]; });
+      var o2={}; PRODUCTS.forEach(function(p){ o2[p.name]=p.price; });
+      localStorage.setItem("zentek_prices",JSON.stringify(o2));
+    }
+    history.replaceState(null,"",location.pathname);
+  } }catch(e){}
 var qty = PRODUCTS.map(function(){return 0});
 var grid = document.getElementById("grid"), cards = [];
 function fmt(n){return n.toFixed(2)}
@@ -145,11 +155,11 @@ document.querySelector("header img").onclick=function(){
 };
 document.getElementById("share").onclick=function(){
   var url=location.href.split("#")[0].split("?")[0].replace(/index\.html$/,"");
+  url+="?p="+PRODUCTS.map(function(p){return p.price}).join(",");
   var text="Zentek Commande : "+url;
   if(navigator.share){ navigator.share({title:"Zentek Commande",text:"Zentek Commande",url:url}).catch(function(){}); }
   else { window.open("https://wa.me/?text="+encodeURIComponent(text),"_blank"); }
 };
-try{fetch("prices.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json()}).then(function(o){PRODUCTS.forEach(function(p){if(typeof o[p.name]==="number")p.price=o[p.name]});refreshPrices();update();}).catch(function(){});}catch(e){}
 </script>
 <script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js")})}</script>
 </body>
