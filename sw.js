@@ -1,5 +1,5 @@
-var CACHE="zentek-v1";
-var FILES=["./","./index.html","./manifest.json","./icon-192.png","./icon-512.png"];
+var CACHE="zentek-v6";
+var FILES=["./","./index.html","./manifest.json","./prices.json","./icon-192.png","./icon-512.png"];
 self.addEventListener("install",function(e){e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(FILES)}));self.skipWaiting()});
 self.addEventListener("activate",function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(x){return x!==CACHE}).map(function(x){return caches.delete(x)}))}));self.clients.claim()});
 self.addEventListener("fetch",function(e){
